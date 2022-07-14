@@ -1,8 +1,10 @@
 package infra
 
 import (
+	_ "embed"
+	"io"
 	"log"
-	"os"
+	"strings"
 	"time"
 
 	"github.com/faiface/beep"
@@ -14,13 +16,14 @@ type SoundPlayer struct {
 	AlarmFilepath string
 }
 
-func (s *SoundPlayer) Play() {
-	f, err := os.Open(s.AlarmFilepath)
-	if err != nil {
-		log.Fatal(err)
-	}
+//go:embed sounds/alarm1.mp3
+var sound []byte
 
-	streamer, format, err := mp3.Decode(f)
+func (s *SoundPlayer) Play() {
+
+	r := io.NopCloser(strings.NewReader(string(sound)))
+
+	streamer, format, err := mp3.Decode(r)
 	if err != nil {
 		log.Fatal(err)
 	}

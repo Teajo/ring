@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"errors"
 	"fmt"
 	"time"
 )
@@ -9,10 +10,8 @@ type SetTimer interface {
 	Set(time.Duration) *time.Timer
 }
 
-type SetTimerUseCaseError string
-
 const (
-	DurationTooHigh SetTimerUseCaseError = "DurationTooHigh"
+	DurationNotParsable string = "DurationNotParsable"
 )
 
 type SetTimerUseCase struct {
@@ -21,14 +20,20 @@ type SetTimerUseCase struct {
 }
 
 type SetTimerCommand struct {
-	Duration time.Duration
+	Duration string
 }
 
 func (setTimerUseCase *SetTimerUseCase) HandleSetTimerCommand(command *SetTimerCommand) error {
 
+	duration, error := time.ParseDuration(command.Duration)
+
+	if error != nil {
+		return errors.New(DurationNotParsable)
+	}
+
 	fmt.Println("It will ring in", command.Duration)
 
-	timer := setTimerUseCase.Timer.Set(command.Duration)
+	timer := setTimerUseCase.Timer.Set(duration)
 
 	<-timer.C
 	setTimerUseCase.SoundPlayer.Play()

@@ -1,12 +1,11 @@
 package handlers
 
 import (
-	"fmt"
 	"time"
 )
 
 type DisplayCountdown interface {
-	display(*RemainingTime)
+	Display(*RemainingTime)
 }
 
 type Countdown struct {
@@ -22,21 +21,17 @@ type RemainingTime struct {
 
 func (c *Countdown) Start(deadline time.Time, callback func()) {
 	remainingTime := c.getRemainingTime(deadline)
-	c.displayCountdown(remainingTime)
+	c.DisplayCountdown.Display(remainingTime)
 
 	for range time.Tick(1 * time.Second) {
 		remainingTime := c.getRemainingTime(deadline)
-		c.DisplayCountdown.display(remainingTime)
+		c.DisplayCountdown.Display(remainingTime)
 
 		if remainingTime.T <= 0 {
 			callback()
 			break
 		}
 	}
-}
-
-func (c *Countdown) displayCountdown(ct *RemainingTime) {
-	fmt.Printf("\r%02d:%02d:%02d", ct.H, ct.M, ct.S)
 }
 
 func (c *Countdown) getRemainingTime(t time.Time) *RemainingTime {

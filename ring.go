@@ -6,6 +6,7 @@ import (
 	"ring/application/domain"
 
 	application "ring/application/domain"
+	handlers "ring/application/domain/handlers"
 
 	infra "ring/application/infra"
 )
@@ -27,9 +28,16 @@ func main() {
 
 	soundPlayer := &infra.SoundPlayer{}
 	timer := &infra.TimerSetter{}
+	displayCountdown := &infra.DisplayCountdown{}
+
+	countDown := &handlers.Countdown{
+		DisplayCountdown: displayCountdown,
+	}
+
 	timerUseCase := &application.SetTimerUseCase{
 		SoundPlayer: soundPlayer,
 		Timer:       timer,
+		Countdown:   countDown,
 	}
 
 	err := timerUseCase.HandleSetTimerCommand(&domain.SetTimerCommand{

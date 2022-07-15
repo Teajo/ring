@@ -2,7 +2,7 @@ package domain
 
 import (
 	"errors"
-	"fmt"
+	"ring/application/domain/handlers"
 	"time"
 )
 
@@ -17,13 +17,14 @@ const (
 type SetTimerUseCase struct {
 	SoundPlayer SoundPlayer
 	Timer       SetTimer
+	Countdown   *handlers.Countdown
 }
 
 type SetTimerCommand struct {
 	Duration string
 }
 
-func (setTimerUseCase *SetTimerUseCase) HandleSetTimerCommand(command *SetTimerCommand) error {
+func (useCase *SetTimerUseCase) HandleSetTimerCommand(command *SetTimerCommand) error {
 
 	duration, error := time.ParseDuration(command.Duration)
 
@@ -31,12 +32,11 @@ func (setTimerUseCase *SetTimerUseCase) HandleSetTimerCommand(command *SetTimerC
 		return errors.New(DurationNotParsable)
 	}
 
-	fmt.Println("It will ring in", command.Duration)
+	deadline := time.Now().Add(duration)
 
-	timer := setTimerUseCase.Timer.Set(duration)
-
-	<-timer.C
-	setTimerUseCase.SoundPlayer.Play()
+	useCase.Countdown.Start(deadline, func() {
+		useCase.SoundPlayer.Play()
+	})
 
 	return nil
 }

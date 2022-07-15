@@ -1,40 +1,40 @@
 package handlers
 
 import (
-	"fmt"
 	"time"
 )
 
-type Countdown struct {
+type DisplayCountdown interface {
+	Display(*RemainingTime)
 }
 
-type remainingTime struct {
-	t int
-	h int
-	m int
-	s int
+type Countdown struct {
+	DisplayCountdown
+}
+
+type RemainingTime struct {
+	T int
+	H int
+	M int
+	S int
 }
 
 func (c *Countdown) Start(deadline time.Time, callback func()) {
 	remainingTime := c.getRemainingTime(deadline)
-	c.displayCountdown(remainingTime)
+	c.DisplayCountdown.Display(remainingTime)
 
 	for range time.Tick(1 * time.Second) {
 		remainingTime := c.getRemainingTime(deadline)
-		c.displayCountdown(remainingTime)
+		c.DisplayCountdown.Display(remainingTime)
 
-		if remainingTime.t <= 0 {
+		if remainingTime.T <= 0 {
 			callback()
 			break
 		}
 	}
 }
 
-func (c *Countdown) displayCountdown(ct *remainingTime) {
-	fmt.Printf("\r%02d:%02d:%02d", ct.h, ct.m, ct.s)
-}
-
-func (c *Countdown) getRemainingTime(t time.Time) *remainingTime {
+func (c *Countdown) getRemainingTime(t time.Time) *RemainingTime {
 	currentTime := time.Now()
 	difference := t.Sub(currentTime)
 
@@ -43,10 +43,10 @@ func (c *Countdown) getRemainingTime(t time.Time) *remainingTime {
 	minutes := int(total/60) % 60
 	seconds := int(total % 60)
 
-	return &remainingTime{
-		t: total,
-		h: hours,
-		m: minutes,
-		s: seconds,
+	return &RemainingTime{
+		T: total,
+		H: hours,
+		M: minutes,
+		S: seconds,
 	}
 }

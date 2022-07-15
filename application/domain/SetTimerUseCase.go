@@ -11,7 +11,7 @@ type SetTimer interface {
 }
 
 const (
-	DurationNotParsable string = "DurationNotParsable"
+	DurationNotParsable string = "Given duration is not parsable"
 )
 
 type SetTimerUseCase struct {

@@ -8,7 +8,6 @@ import (
 	application "ring/application/domain"
 
 	infra "ring/application/infra"
-	"time"
 )
 
 func main() {
@@ -19,16 +18,10 @@ func main() {
 	}
 
 	args := os.Args[1:]
+	duration := args[0]
 
-	if args[0] == "" {
+	if duration == "" {
 		fmt.Println("No duration given, bye")
-		return
-	}
-
-	duration, error := time.ParseDuration(args[0])
-
-	if error != nil {
-		fmt.Println("Failed to parse given duration")
 		return
 	}
 
@@ -39,7 +32,11 @@ func main() {
 		Timer:       timer,
 	}
 
-	timerUseCase.HandleSetTimerCommand(&domain.SetTimerCommand{
+	err := timerUseCase.HandleSetTimerCommand(&domain.SetTimerCommand{
 		Duration: duration,
 	})
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }

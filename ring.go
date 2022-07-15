@@ -25,7 +25,7 @@ func main() {
 		return
 	}
 
-	soundPlayer := &infra.SoundPlayer{AlarmFilepath: "sounds/alarm1.mp3"}
+	soundPlayer := &infra.SoundPlayer{}
 	timer := &infra.TimerSetter{}
 	timerUseCase := &application.SetTimerUseCase{
 		SoundPlayer: soundPlayer,
